@@ -85,6 +85,36 @@
 		return JSON.stringify(left) == JSON.stringify(right);
 	};
 
+	//sets up listener(s) for messages from parent/child frames
+	let addMessageListeners = function(promises) {
+		window.addEventListener('message', (msg) => {
+			//as our widget might be hosted in any page, we can't effectively validate the message origin
+			//instead we just have to accept any message that appears syntactically valid
+			let data = msg.data;
+
+			if (data && data.frameId !== undefined && data.eventType) {
+				if (isIframe() && data.eventType === scanRequestEvent) {
+					//the message is syntactically valid; we should respond promptly with our own message
+					let myFrameId = data.frameId;
+					let sourceWindow = msg.source;
+
+					scanFields((result) => {
+						sourceWindow.postMessage({eventType: scanResponseEvent, frameId: myFrameId, fields: result}, "*");
+					});
+				}
+				else if (data.eventType === scanResponseEvent && data.fields) {
+					//the message is syntactically valid; we got the data we asked for, resolve the promise
+					let childFrameId = data.frameId;
+					let resolve = promises[childFrameId];			//not sure if passing promise resolution methods around like this is a good idea or not, but it works
+																	//passing the entire Promise object and using Promise.resolve() should be another way to accomplish the same effect
+					if (resolve) {
+						resolve({frameId: childFrameId, fields: data.fields});
+					}
+				}
+			}
+		});
+	};
+
 	let numFrames = 0;				//the number of child frames we're waiting to hear from
 	let childFields = {};			//any fields that have been reported to us from child frames; this object will conain one list for each child frame
 	let domReady = function() {
@@ -95,32 +125,7 @@
 		let framePromises = [];
 		if (isIframe() || numFrames > 0) {		//we could just always add the event listener(s), but it's better to only listen for 'postMessage' events if we're actually expecting to get some
 			//register to receive and respond to messages from the parent frame
-			window.addEventListener('message', (msg) => {
-				//as our widget might be hosted in any page, we can't effectively validate the message origin
-				//instead we just have to accept any message that appears syntactically valid
-				let data = msg.data;
-
-				if (data && data.frameId !== undefined && data.eventType) {
-					if (isIframe() && data.eventType === scanRequestEvent) {
-						//the message is syntactically valid; we should respond promptly with our own message
-						let myFrameId = data.frameId;
-						let sourceWindow = msg.source;
-
-						scanFields((result) => {
-							sourceWindow.postMessage({eventType: scanResponseEvent, frameId: myFrameId, fields: result}, "*");
-						});
-					}
-					else if (data.eventType === scanResponseEvent && data.fields) {
-						//the message is syntactically valid; we got the data we asked for, resolve the promise
-						let childFrameId = data.frameId;
-						let resolve = framePromises[childFrameId];		//not sure if passing promise resolution methods around like this is a good idea or not, but it works
-																		//passing the entire Promise object and using Promise.resolve() should be another way to accomplish the same effect
-						if (resolve) {
-							resolve({frameId: childFrameId, fields: data.fields});
-						}
-					}
-				}
-			});
+			addMessageListeners(framePromises);
 		}
 
 		//add onload handlers to any iframe elements on the page; we need to interrogate these after they load
