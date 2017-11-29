@@ -9,13 +9,13 @@
 
 # Basic Requirements
 
-&nbsp;&nbsp;&nbsp;&nbsp;*&#x2713;* Only edit the widget.js file! <br />
-&nbsp;&nbsp;&nbsp;&nbsp;*&#x2713;* The frame documents should not be edited. <br />
-&nbsp;&nbsp;&nbsp;&nbsp;*&#x2713;* The test case should not be changed. <br />
-&nbsp;&nbsp;&nbsp;&nbsp;*&#x2713;* Karma config should not be edited. <br />
-&nbsp;&nbsp;&nbsp;&nbsp;*&#x2713;* The test must pass 100% of the times it is run (assuming no network errors).<b>\*</b> <br />
+&nbsp;&nbsp;&nbsp;&nbsp;**&#x2713;** Only edit the widget.js file! <br />
+&nbsp;&nbsp;&nbsp;&nbsp;**&#x2713;**The frame documents should not be edited. <br />
+&nbsp;&nbsp;&nbsp;&nbsp;**&#x2713;** The test case should not be changed. <br />
+&nbsp;&nbsp;&nbsp;&nbsp;**&#x2713;** Karma config should not be edited. <br />
+&nbsp;&nbsp;&nbsp;&nbsp;**&#x2713;**The test must pass 100% of the times it is run (assuming no network errors).**\*** <br />
 
-<b>\*</b> See assumptions
+**\*** See assumptions
 
 
 # Assumptions
