@@ -26,6 +26,7 @@
 * If an otherwise-valid form element doesn't have a label, then it should be ignored
 * When sorting fields, a case-sensitive sort is acceptable
 * Full support for older Microsoft browsers (pre-Edge) is not required
+* Monitoring dynamic updates to the DOM and rescanning after the initial page load is not required (but might make a good extension)
 
 
 ## Questions
