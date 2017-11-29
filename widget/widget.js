@@ -85,6 +85,7 @@
 	};
 
 	let numFrames = 0;				//the number of child frames we're waiting to hear from
+	let childFields = {};			//any fields that have been reported to us from child frames; this object will conain one list for each child frame
 	let domReady = function() {
 		let frames = document.getElementsByTagName("iframe");
 		numFrames = frames.length;
@@ -122,7 +123,6 @@
 		}
 
 		//add onload handlers to any iframe elements on the page; we need to interrogate these after they load
-		let childFields = {};			//any fields that have been reported to us from child frames; this object will conain one list for each child frame
 		for (let index = 0; index < numFrames; index++) {
 			let frame = frames[index];
 			frame.addEventListener('load', () => {
