@@ -19,6 +19,7 @@
 
 
 # Assumptions
+
 * Given that the testcase is timeboxed to 10 seconds, an excessively slow page-load can be counted as a 'network error'
 * Only form controls that are actually contained within a 'form' element should be scanned
 * Only labels specified with a correctly structured 'label' element should be counted
