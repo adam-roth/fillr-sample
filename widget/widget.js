@@ -48,6 +48,7 @@
   		window.CustomEvent = CustomEvent;
 	}
 	//FIXME:  also postMessage fix for IE?
+	//FIXME:  and if we're really serious about it, Promises as well
 
 
 	//internal methods
@@ -62,8 +63,12 @@
 
 	//gets the first key within an object; see:  https://stackoverflow.com/questions/3298477/get-first-key-from-javascript-object
 	let firstKey = function(obj) {
+		if (! obj) {
+			return undefined;
+		}
+
 		let keys = Object.keys(obj);
-		return keys.length > 0 ? keys[0] : undefined;
+		return keys[0];		//will be 'undefined' if obj is empty
 	};
 
 	//checks whether or not two arrays are the same
@@ -75,19 +80,18 @@
 			return false;
 		}
 
-		//inefficient, but adequate for throw-away code
+		//inefficient, but adequate for throw-away code and very concise
 		return JSON.stringify(left) == JSON.stringify(right);
 	};
 
 	let numFrames = 0;				//the number of child frames we're waiting to hear from
 	let domReady = function() {
-		//add onload handlers to any iframe elements on the page; we need to interrogate these after they load
-		let framePromises = [];
 		let frames = document.getElementsByTagName("iframe");
 		numFrames = frames.length;
 
 		//if we're running inside of an iframe or with child frames, we need to prepare to receive messages
-		if (isIframe() || numFrames > 0) {
+		let framePromises = [];
+		if (isIframe() || numFrames > 0) {		//we could just always add the event listener(s), but it's better to only listen for 'postMessage' events if we're actually expecting to get some
 			//register to receive and respond to messages from the parent frame
 			window.addEventListener('message', (msg) => {
 				//as our widget might be hosted in any page, we can't effectively validate the message origin
@@ -108,6 +112,7 @@
 						//the message is syntactically valid; we got the data we asked for, resolve the promise
 						let childFrameId = data.frameId;
 						let resolve = framePromises[childFrameId];		//not sure if passing promise resolution methods around like this is a good idea or not, but it works
+																		//passing the entire Promise object and using Promise.resolve() should be another way to accomplish the same effect
 						if (resolve) {
 							resolve({frameId: childFrameId, fields: data.fields});
 						}
@@ -116,7 +121,9 @@
 			});
 		}
 
-		for (let index = 0; index < frames.length; index++) {
+		//add onload handlers to any iframe elements on the page; we need to interrogate these after they load
+		let childFields = {};			//any fields that have been reported to us from child frames; this object will conain one list for each child frame
+		for (let index = 0; index < numFrames; index++) {
 			let frame = frames[index];
 			frame.addEventListener('load', () => {
 				//FIXME:  this code won't work in Internet Explorer (should be okay in Edge)
@@ -125,7 +132,7 @@
 					let frameId = index;
 					childFields[frameId] = [];
 					new Promise((resolve, reject) => {
-						//it's the event handler's responsibility to resolve the promise
+						//it becomes the event handler's responsibility to resolve the promise
 						framePromises.push(resolve);
 						frame.contentWindow.postMessage({eventType: scanRequestEvent, frameId: frameId}, "*");
 
@@ -182,7 +189,6 @@
 	};
 
 	//scan the fields in the current document
-	let childFields = {};			//any fields that have been reported to us from child frames; this object will conain one list for each child frame
 	let scannedFields = undefined;	//the last set of scanned fields
 	let scanFields = function(eventNameOrCallback) {
 		if (numFrames > 0) {
@@ -244,7 +250,7 @@
 
 	//expose our public API
 	const fieldScanner = window[moduleName];
-	fieldScanner.getFields = function() {
+	fieldScanner.getFields = function() {		//could do this in a more object-oriented way using 'prototype', but that seems like overkill; we don't expect anyone to create new instances of this widget
 		return scannedFields;
 	};
 
