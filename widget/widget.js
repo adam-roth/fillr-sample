@@ -144,7 +144,7 @@
 					})
 					.then((result) => {
 						//we got a message back, it should contain a frame-id and the fields that were found within that frame
-						if (result && result.frameId !== undefined && result.fields) {
+						if (result && result.frameId !== undefined && result.fields && result.fields instanceof Array) {
 							let childFrameId = result.frameId;
 							let fields = result.fields;
 
