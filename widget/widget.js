@@ -25,7 +25,8 @@
 			while (window[moduleName]) {
 				moduleName += Math.random();
 			}
-			window[moduleName] = {};
+			window[moduleName] = {}; 	//could do this in a more object-oriented way using function/prototype, but that seems unnecessary; we don't expose
+										//any complex behavior or expect anyone to create new instances of this widget
 		}
 		else {
 			//as far as we can tell, we've been loaded twice; bail out
@@ -250,7 +251,7 @@
 
 	//expose our public API
 	const fieldScanner = window[moduleName];
-	fieldScanner.getFields = function() {		//could do this in a more object-oriented way using 'prototype', but that seems like overkill; we don't expect anyone to create new instances of this widget
+	fieldScanner.getFields = function() {
 		return scannedFields;
 	};
 
