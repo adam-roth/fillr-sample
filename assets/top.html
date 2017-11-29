@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Top Frame</title>
+</head>
+<body>
+  <form>
+    <label for="first_name">First Name</label>
+    <input id="first_name" name="first_name">
+    <br>
+    <label for="last_name">Last Name</label>
+    <input id="last_name" name="last_name">
+  </form>
+
+  <iframe src="http://fillr-code-tests.s3.amazonaws.com/test-b/address.html"></iframe>
+  <script>
+    let s = document.createElement('script');
+    s.src = 'http://localhost:9999/base/widget/widget.js'
+    document.body.appendChild(s);
+  </script>
+</body>
+</html>
