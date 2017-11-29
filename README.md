@@ -7,7 +7,7 @@
 - When your widget has collected all the fields from all the frames, trigger a CustomEvent on the top frame document named 'frames:loaded' with a property named 'widget' within the detail. The widget is a string with the variable name of your widget object on the window scope.  This will call window[your_object_name].getFields() and run the test.
 
 
-# Basic RequirementsS
+# Basic Requirements
 
 &nbsp;&nbsp;&nbsp;&nbsp;<b>&#x2713;</b> Only edit the widget.js file! <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<b>&#x2713;</b> The frame documents should not be edited. <br />
